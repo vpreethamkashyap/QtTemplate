@@ -1,4 +1,5 @@
 #include "mythread.h"
+#include "mytimer.h"
 #include <QDebug>
 
 MyThread::MyThread(QString s) : name(s)
@@ -58,18 +59,44 @@ void MyThread::readyRead()
     // get the information
     QByteArray Data = socket->readAll();
 
+    /* Some hints on converting QByteArray to QString*/
+    //QString data = QString::fromAscii_helper(Data.data());
+    //QString DataAsString = QTextCodec::codecForMib(1015)->toUnicode(Data);
+
+    QString stringData(Data);
+
+    if(stringData == "EM alive !"){
+        qDebug() << "***************************energy-manager signaled**********************************";
+    }
+    else if(stringData == "OM alive !"){
+        qDebug() << "***************************outback-module signaled**********************************";
+    }
+    else if(stringData == "SM alive !"){
+        qDebug() << "***************************serial-module signaled**********************************";
+    }
+
     // will write on server side window
     qDebug() << socketDescriptor << " Data in: " << Data;
+
+    //QTimer::singleShot(5000, this, SLOT(singleshotslot()));
 
     socket->flush();
     socket->write("Thanks signal received !");
 }
 
+void MyThread::singleshotslot()
+{
+    qDebug() << "Single shot timed out";
+}
+
 void MyThread::disconnected()
 {
+    QMutex mutex;
+    mutex.lock();
+    stoptimerthread = true;
+    mutex.unlock();
+
     qDebug() << socketDescriptor << " Disconnected";
-
-
     socket->deleteLater();
     exit(0);
 }

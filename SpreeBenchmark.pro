@@ -26,9 +26,11 @@ SOURCES += \
         main.cpp \
     mythread.cpp \
     mytcpsocket.cpp \
-    mytcpserver.cpp
+    mytcpserver.cpp \
+    mytimer.cpp
 
 HEADERS += \
     mythread.h \
     mytcpsocket.h \
-    mytcpserver.h
+    mytcpserver.h \
+    mytimer.h

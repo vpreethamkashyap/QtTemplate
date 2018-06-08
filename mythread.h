@@ -4,6 +4,9 @@
 #include <QThread>
 #include <QString>
 #include <QTcpSocket>
+#include <QTimer>
+#include <QMutexLocker>
+#include <QMutex>
 
 class MyThread : public QThread
 {
@@ -30,6 +33,7 @@ public slots:
 
     void readyRead();
     void disconnected();
+    void singleshotslot();
 
 private:
     QTcpSocket* socket;

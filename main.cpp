@@ -4,6 +4,7 @@
 #include "mytcpsocket.h"
 #include "mytcpserver.h"
 #include "mythread.h"
+#include "mytimer.h"
 
 
 /*This is the start of main thread or GUI thread as referred in Qt applications*/
@@ -20,11 +21,14 @@ int main(int argc, char *argv[])
 //    thread3.start();
 //    thread3.setObjectName("Thread3");
 
-     MyTcpSocket socket;
-     socket.doconnectnoblock();
+//     MyTcpSocket socket;
+//     socket.doconnectnoblock();
 
-     MyTcpServer server_a;
-     server_a.listentoincommingconnection();
+//     MyTcpServer server_a;
+//     server_a.listentoincommingconnection();
+
+     MyTimer timer;
+     timer.start();
 
      MyServer server_b;
      server_b.startServer();

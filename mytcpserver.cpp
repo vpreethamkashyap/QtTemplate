@@ -64,6 +64,8 @@ void MyServer::incomingConnection(qintptr socketDescriptor)
     // Every new connection will be run in a newly created thread
     MyThread *thread = new MyThread(socketDescriptor, this);
 
+    QString s = QString::number(socketDescriptor);
+    thread->setObjectName(s);
     // connect signal/slot
     // once a thread is not needed, it will be beleted later
     connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
