@@ -26,8 +26,14 @@ public:
 private:
     QUdpSocket* socketServer;
     QTimer* timer;
-    QTime newtime;
-    QTime oldtime;
+    QTime em_newtime;
+    QTime em_oldtime;
+    QTime sm_newtime;
+    QTime sm_oldtime;
+    QTime om_newtime;
+    QTime om_oldtime;
+
+    QString module;
     QMutex mutex;
 
 signals:

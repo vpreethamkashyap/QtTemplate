@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
      MyUdp udpserver;
      udpserver.initsocket();
 
-    qDebug() << "hello from GUI thread" << a.thread()->currentThreadId();
+    qDebug() << "hello from Core / Main thread" << a.thread()->currentThreadId();
 
     return a.exec();
 }

@@ -3,8 +3,14 @@
 MyUdp::MyUdp(QObject *parent) :
     QObject(parent)
 {
-    newtime = QTime::fromString("00:00:00", "hh:mm:ss");
-    oldtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    em_newtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    em_oldtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    sm_newtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    sm_oldtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    om_newtime = QTime::fromString("00:00:00", "hh:mm:ss");
+    om_oldtime = QTime::fromString("00:00:00", "hh:mm:ss");
+
+    module = " ";
 }
 
 void MyUdp::initsocket()
@@ -25,78 +31,72 @@ MyUdp::~MyUdp()
 void MyUdp::readPendingDatagrams()
 {
 
-    if(!timer->isActive())
-    {
+    if(!timer->isActive()){
         timer->start(TIMEOUT_mS);
     }
-//    while(socketServer->hasPendingDatagrams())
-//    {
-//        QByteArray buffer;
-//        buffer.resize(socketServer->pendingDatagramSize());
 
-//        QHostAddress sender;
-//        quint16 senderPort;
-//        socketServer->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
-
-//        qDebug() << "received signal : " << buffer;
-//    }
-
+    // Create a local QByteArray to capture UDP packets
     QByteArray datagram;
 
-
-    do
-    {
+    do{
         datagram.resize(socketServer->pendingDatagramSize());
         socketServer->readDatagram(datagram.data(), datagram.size());
     }while(socketServer->hasPendingDatagrams());
 
-//    QDateTime datetime;
-//    QDataStream in(&datagram, QIODevice::ReadOnly);
-//    in.setVersion(QDataStream::Qt_5_3);
-//    in >> datetime ;
+    // Create a local QString to convert ByteArray to QString
+    QString moduledata(datagram);
 
-    QString datetimestring(datagram);
+    //To split the string received from other modules
+    QStringList list1 = moduledata.split(' ', QString::SkipEmptyParts);
 
-    //Perform this in a QTimer
-    QMutexLocker lock(&mutex);
-    newtime = QTime::fromString(datetimestring, "hh:mm:ss");
-//    static QTime oldtime = QTime::fromString("00:00:00", "hh:mm:ss");
-
-//    if(newtime != oldtime)
-//    {
-//        oldtime = newtime;
-//    }
-//    else
-//    {
-
-//    }
-
-//    qDebug() << " ******* Converted Time ******** "<< newtime;
-//    QLineEdit dateLineEdit;
-//    dateLineEdit.setText(datetime.date().toString());
-//    QLineEdit timeLineEdit;
-//    timeLineEdit.setText(datetime.time().toString());
-
-//    QString date = dateLineEdit.text();
-//    QString time = timeLineEdit.text();
-
-    qDebug() << " Time in hh:mm:ss : " << datetimestring ;
+    if(list1[0] == "EM"){
+        //Lock the mutex to capture newtime
+        QMutexLocker lock(&mutex);
+        module = list1[0];
+        em_newtime = QTime::fromString(list1[1], "hh:mm:ss");
+        qDebug() << " Module name & New time : " << list1[0] << list1[1] ;
+    } else if(list1[0] == "SM"){
+        //Lock the mutex to capture newtime
+        QMutexLocker lock(&mutex);
+        module = list1[0];
+        sm_newtime = QTime::fromString(list1[1], "hh:mm:ss");
+        qDebug() << " Module name & New time : " << list1[0] << list1[1] ;
+    } else if(list1[0] == "OM"){
+        //Lock the mutex to capture newtime
+        QMutexLocker lock(&mutex);
+        module = list1[0];
+        om_newtime = QTime::fromString(list1[1], "hh:mm:ss");
+        qDebug() << " Module name & New time : " << list1[0] << list1[1] ;
+    }
 }
 
+
+// Slot based on the timeout() stimulus from QTimer
 void MyUdp::readtimestamp()
 {
+    // Lock the mutex so that newtime & oldtime is safe
     QMutexLocker lock(&mutex);
-    if(newtime != oldtime)
-    {
-        oldtime = newtime;
-        qDebug() << "The updated oldtime : " << oldtime ;
-    }
-    else
-    {
-//        QProcess process;
-//        process.start("bash", QStringList() << "-c" << "service hc-daemon restart");
-//        process.waitForFinished();
+
+    if(module == "EM"){
+        if(em_newtime != em_oldtime){
+            em_oldtime = em_newtime;
+            qDebug() << " Updated EM oldtime : " << em_oldtime.toString("hh:mm:ss");
+        }
+    } else if(module == "SM"){
+        if(sm_newtime != sm_oldtime){
+            sm_oldtime = sm_newtime;
+            qDebug() << "Updated SM oldtime : " << sm_oldtime.toString("hh:mm:ss");
+        }
+    } else if(module == "OM"){
+        if(om_newtime != om_oldtime){
+            om_oldtime = om_newtime;
+            qDebug() << "Updated OM oldtime : " << om_oldtime.toString("hh:mm:ss");
+        }
+    } else{       // Take necessary action
+
+        /*QProcess process;
+        process.start("bash", QStringList() << "-c" << "service hc-daemon restart");
+        process.waitForFinished();*/
         qDebug() << "********* restart *************";
     }
-
 }
