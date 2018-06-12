@@ -1,6 +1,7 @@
 QT -= gui
 QT += core
 QT += network
+QT += widgets
 
 TARGET = spreebenchmark
 target.files= spreebenchmark
@@ -27,10 +28,12 @@ SOURCES += \
     mythread.cpp \
     mytcpsocket.cpp \
     mytcpserver.cpp \
-    mytimer.cpp
+    mytimer.cpp \
+    myudp.cpp
 
 HEADERS += \
     mythread.h \
     mytcpsocket.h \
     mytcpserver.h \
-    mytimer.h
+    mytimer.h \
+    myudp.h

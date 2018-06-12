@@ -74,12 +74,22 @@ void MyTimer::handletimerthread()
 
 void MyTimer::handleloopeventslot()
 {
+    loopcontinue:
     while(!(stoptimerthread))
     {
          qDebug() << " Connection either still not connected or its present";
     }
     qDebug() << "One of the connections droped out please stop and reset";
-    emit worker->quit();
-    return;
+    QProcess process;
+    process.start("bash", QStringList() << "-c" << "service hc-daemon restart");
+    process.waitForFinished();
+
+    QMutex mutex;
+    mutex.lock();
+    stoptimerthread = false;
+    mutex.unlock();
+    goto loopcontinue;
+    //emit worker->quit();
+    //return;
 
 }

@@ -6,6 +6,8 @@
 #include <QThread>
 #include <QDebug>
 #include <QEventLoop>
+#include <QProcess>
+#include <QMutex>
 
 extern bool stoptimerthread;
 
